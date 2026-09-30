@@ -1,0 +1,66 @@
+package org.j2os.personrepository;
+
+import org.j2os.entity.Person;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.reflect.Array.set;
+
+public class Personrepository implements AutoCloseable{
+    private Connection connection;
+    private PreparedStatement preparedStatement;
+
+    public Personrepository(Connection connection){
+        this.connection=connection;
+    }
+
+    public void insert(Person person) throws Exception{
+        preparedStatement = connection.prepareStatement("insert into person1 (name,family,age) values(?,?,?) returning id");
+        preparedStatement.setString(1, person.getName());
+        preparedStatement.setString(2, person.getFamily());
+        preparedStatement.setInt(3, person.getAge());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        person.setId(resultSet.getInt("id"));
+
+
+    }
+    public void update(Person person) throws Exception {
+        preparedStatement = connection.prepareStatement("update person1 set name=?,family=?,age=? where id=?");
+        preparedStatement.setString(1, person.getName());
+        preparedStatement.setString(2, person.getFamily());
+        preparedStatement.setInt(3, person.getAge());
+        preparedStatement.setInt(4, person.getId());
+        preparedStatement.executeUpdate();
+    }
+    public void delete(Person person) throws Exception{
+        preparedStatement=connection.prepareStatement("delete from person1 where id=?");
+        preparedStatement.setInt(1,person.getId());
+        preparedStatement.executeUpdate();
+    }
+    public List<Person> selectAll() throws Exception{
+        preparedStatement=connection.prepareStatement("select * from person1");
+        ResultSet resultSet=preparedStatement.executeQuery();
+        List<Person> personList=new ArrayList<>();
+        while (resultSet.next()){
+            Person person= new Person()
+                    .setName(resultSet.getString("name"))
+                    .setFamily(resultSet.getString("family"))
+                    .setAge(resultSet.getInt("age"));
+            personList.add(person);
+
+        }
+        return personList;
+
+    }
+    public void close() throws Exception{
+        preparedStatement.close();
+        connection.close();
+
+    }
+    }
