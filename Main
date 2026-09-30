@@ -1,0 +1,52 @@
+package org.j2os;
+
+import org.j2os.entity.Person;
+import org.j2os.personrepository.Personrepository;
+import org.j2os.personservice.Personservice;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    static void main1() throws Exception {
+        Person person=new Person()
+                .setName("Nasrin")
+                .setFamily("Shahsavand")
+                .setAge(38);
+        Personservice.getInstance().save(person);
+        System.out.println(person.getId());
+
+    }
+
+    static void main2() throws Exception{
+        Person person=new Person()
+                .setName("Amirsam")
+                .setFamily("Bahador")
+                .setAge(39)
+                .setId(9);
+        Personservice.getInstance().update(person);
+
+    }
+
+    static void main3() throws Exception{
+        Person person=new Person()
+                .setId(8);
+        Personservice.getInstance().delete(person);
+
+    }
+
+    static void main() throws Exception{
+//        main1();
+//        main2();
+//        main3();
+        Personservice.getInstance().findAll();
+        List<Person> personList=new ArrayList<>();
+        for (Person person : personList) {
+            System.out.println(person.getId());
+            System.out.println(person.getName());
+            System.out.println(person.getFamily());
+            System.out.println(person.getAge());
+        }
+
+    }
+}
